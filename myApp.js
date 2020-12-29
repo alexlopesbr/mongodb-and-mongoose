@@ -1,22 +1,81 @@
 require('dotenv').config();
+const MongoClient = require('mongodb').MongoClient;
 
+const assert = require('assert');
+const mongoose = require('mongoose');
 
-let Person;
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
+// estrutura do schema do mongoose
+const Schema = mongoose.Schema;
+
+let personSchema = new Schema({
+  name: { type: String, require: true },
+  age: Number,
+  favoriteFoods: [String],
+});
+
+let Person = mongoose.model('Person', personSchema);
+// fim estrutura
+
+// funcao para salvar no banco de dados
 const createAndSavePerson = (done) => {
-  done(null /*, data*/);
+  // cria novo modelo baseado no schema Person
+  let ale = new Person({
+    name: 'Alexandre',
+    age: 34,
+    favoriteFoods: ['item1', 'item2', 'item3'],
+  });
+
+  // salva no banco de dados
+  ale.save((err, data) => {
+    if (err) {
+      return console.log(error);
+    } else {
+      done(null, data);
+    }
+  });
 };
 
-const createManyPeople = (arrayOfPeople, done) => {
-  done(null /*, data*/);
+// array que será passada na função que salva vários modelos ao mesmo tempo
+let arrayOfPeople = [
+  { name: 'João', age: 30, favoriteFoods: ['food1'] },
+  { name: 'Silva', age: 20, favoriteFoods: ['food2'] },
+  { name: 'José', age: 40, favoriteFoods: ['food3'] },
+];
+
+let createManyPeople = (arrayOfPeople, done) => {
+  Person.create(arrayOfPeople, (err, people) => {
+    if (err) {
+      console.log(error);
+    } else {
+      done(null, people);
+    }
+  });
 };
 
+// acha a pessoa pelo nome
 const findPeopleByName = (personName, done) => {
-  done(null /*, data*/);
+  Person.find({ name: personName }, (err, findPerson) => {
+    if (err) {
+      console.log(error);
+    } else {
+      done(null, findPerson);
+    }
+  });
 };
 
 const findOneByFood = (food, done) => {
-  done(null /*, data*/);
+  Person.findOne({ favoriteFoods: food }, (err, findOneFood) => {
+    if (err) {
+      console.log(error);
+    } else {
+      done(null, findOneFood);
+    }
+  });
 };
 
 const findPersonById = (personId, done) => {
@@ -24,7 +83,7 @@ const findPersonById = (personId, done) => {
 };
 
 const findEditThenSave = (personId, done) => {
-  const foodToAdd = "hamburger";
+  const foodToAdd = 'hamburger';
 
   done(null /*, data*/);
 };
@@ -40,13 +99,13 @@ const removeById = (personId, done) => {
 };
 
 const removeManyPeople = (done) => {
-  const nameToRemove = "Mary";
+  const nameToRemove = 'Mary';
 
   done(null /*, data*/);
 };
 
 const queryChain = (done) => {
-  const foodToSearch = "burrito";
+  const foodToSearch = 'burrito';
 
   done(null /*, data*/);
 };
