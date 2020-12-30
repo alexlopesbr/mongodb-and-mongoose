@@ -78,36 +78,87 @@ const findOneByFood = (food, done) => {
   });
 };
 
-const findPersonById = (personId, done) => {
-  done(null /*, data*/);
+var findPersonById = (personId, done) => {
+  Person.findById(personId, (err, nameId) => {
+    if (err) {
+      return console.log(err);
+    } else {
+      done(null, nameId);
+    }
+  });
 };
 
 const findEditThenSave = (personId, done) => {
   const foodToAdd = 'hamburger';
-
-  done(null /*, data*/);
+  Person.findById(personId, (err, personToEdit) => {
+    if (err) {
+      return console.log(err);
+    } else {
+      personToEdit.favoriteFoods.push(foodToAdd);
+      personToEdit.save((err, updatedPerson) => {
+        if (err) {
+          return console.log(err);
+        } else {
+          done(null, updatedPerson);
+        }
+      });
+    }
+  });
 };
 
 const findAndUpdate = (personName, done) => {
   const ageToSet = 20;
 
-  done(null /*, data*/);
+  Person.findOneAndUpdate(
+    { name: personName },
+    { age: ageToSet },
+    { new: true },
+    (err, updatedAge) => {
+      if (err) {
+        return console.log(err);
+      } else {
+        done(null, updatedAge);
+      }
+    },
+  );
 };
 
 const removeById = (personId, done) => {
-  done(null /*, data*/);
+  Person.findByIdAndRemove(personId, (err, idToRemove) => {
+    if (err) {
+      return console.log(err);
+    } else {
+      done(null, idToRemove);
+    }
+  });
 };
 
 const removeManyPeople = (done) => {
   const nameToRemove = 'Mary';
 
-  done(null /*, data*/);
+  Person.deleteMany({ name: nameToRemove }, (err, nameToRemove) => {
+    if (err) {
+      return console.log(err);
+    } else {
+      done(null, nameToRemove);
+    }
+  });
 };
 
 const queryChain = (done) => {
   const foodToSearch = 'burrito';
 
-  done(null /*, data*/);
+  Person.find({ favoriteFoods: foodToSearch })
+    .sort({ name: 'asc' })
+    .limit(2)
+    .select('-age')
+    .exec((err, searchResult) => {
+      if (err) {
+        return console.log(err);
+      } else {
+        done(null, searchResult);
+      }
+    });
 };
 
 /** **Well Done !!**
